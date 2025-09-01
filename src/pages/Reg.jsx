@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router'
 import { auth } from '../firebase/firebase.config';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
 
 const Reg = () => {
 
@@ -17,6 +17,14 @@ const Reg = () => {
 
   createUserWithEmailAndPassword(auth, email, password)
   .then((userCredential) => {
+
+//email verification
+sendEmailVerification(auth.currentUser)
+.then(() => {
+  console.log("Verification email sent to:", user.email);
+})
+
+
     // Signed up 
     const user = userCredential.user;
     updateProfile(user, {
@@ -29,6 +37,7 @@ const Reg = () => {
         uid: user.uid,
       });
     })
+
     .catch((error) => {
       console.error("Profile update error:", error.message);
     });

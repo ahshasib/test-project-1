@@ -1,114 +1,123 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router'
-import {signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router';
+import {
+  signInWithPopup,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "firebase/auth";
 import { auth } from '../firebase/firebase.config';
-
-
-
 
 const Login = () => {
   const provider = new GoogleAuthProvider();
-  const [user,setUser] = useState(null)
- 
+  const [user, setUser] = useState(null);
 
- const handleGoogleLogin = (e) =>{
-  e.preventDefault();
-  //for social login
-signInWithPopup(auth, provider)
-.then((result) => {
-  // This gives you a Google Access Token. You can use it to access the Google API.
-  const credential = GoogleAuthProvider.credentialFromResult(result);
-  const token = credential.accessToken;
-  // The signed-in user info.
-  const user = result.user;
-  
-  setUser(user)
-  // IdP data available using getAdditionalUserInfo(result)
-  // ...
-}).catch((error) => {
-  // Handle Errors here.
-  const errorCode = error.code;
-  const errorMessage = error.message;
-  // The email of the user's account used.
-  const email = error.customData.email;
-  // The AuthCredential type that was used.
-  const credential = GoogleAuthProvider.credentialFromError(error);
-  // ...
-});
+  // ✅ Track user even after refresh
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser({
+          displayName: currentUser.displayName || currentUser.email.split('@')[0],
+          email: currentUser.email,
+          uid: currentUser.uid,
+          photoURL: currentUser.photoURL || null,
+        });
+      } else {
+        setUser(null);
+      }
+    });
 
- }
+    return () => unsubscribe();
+  }, []);
 
+  // Google login
+  const handleGoogleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const loggedUser = result.user;
+      setUser({
+        displayName: loggedUser.displayName || loggedUser.email.split('@')[0],
+        email: loggedUser.email,
+        uid: loggedUser.uid,
+        photoURL: loggedUser.photoURL || null,
+      });
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
 
-
-  const handleSubmit = (e) =>{
-    e.preventDefault()
+  // Email/password login
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
 
-  //login with email and password
-createUserWithEmailAndPassword(auth, email, password)
-.then((userCredential) => {
-  // Signed up 
-  const user = userCredential.user;
-  updateProfile(user, {
-    displayName: name,
-  })
-  .then(() => {
-    setUser({
-      displayName: user.displayName || user.email.split('@')[0],
-      email: user.email,
-      uid: user.uid,
-      photoURL: user.photoURL || null,
-    });
-  })
-  .catch((error) => {
-    console.error("Profile update error:", error.message);
-  });
-  // ...
-})
-.catch((error) => {
-  const errorCode = error.code;
-  const errorMessage = error.message;
-  console.log(errorMessage)
-  // ..
-});
+    try {
+       signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        if (!user.emailVerified) {
+          alert("Please verify your email first!");
+          auth.signOut(); // sign out immediately
+          return;
+        }
+        else{
+          setUser({ name: user.displayName, email: user.email, uid: user.uid, });
+        }
+        // proceed to login
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+     
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
 
-  }
-
+  // Logout
+  const handleLogout = async () => {
+    await signOut(auth);
+    setUser(null);
+  };
 
   return (
     <div className='flex justify-center items-center w-full h-screen'>
-      <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
+      <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
         <h1 className='text-center text-2xl bg-black text-white rounded'>Login</h1>
-        <div class="card-body">
-          <form class="fieldset" onSubmit={handleSubmit}>
-            <label class="label">Email</label>
-            <input type="email" class="input" placeholder="Email" name='email'/>
-            <label class="label">Password</label>
-            <input type="password" class="input" placeholder="Password" name='password'/>
-            <div><a class="link link-hover">Forgot password?</a></div>
-            <button class="btn btn-neutral my-4 ">Login</button>
-            <hr />
-            <button class="btn bg-white text-black border-[#e5e5e5] mt-5" type="button" onClick={handleGoogleLogin}>
-              <svg aria-label="Google logo" width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><g><path d="m0 0H512V512H0" fill="#fff"></path><path fill="#34a853" d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"></path><path fill="#4285f4" d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"></path><path fill="#fbbc02" d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"></path><path fill="#ea4335" d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"></path></g></svg>
-              Login with Google
-            </button>
-          </form>
+        <div className="card-body">
+          {!user ? (
+            <form className="fieldset" onSubmit={handleSubmit}>
+              <label className="label">Email</label>
+              <input type="email" className="input" placeholder="Email" name="email" required />
+              <label className="label">Password</label>
+              <input type="password" className="input" placeholder="Password" name="password" required />
+              <button className="btn btn-neutral my-4">Login</button>
+              <hr />
+              <button
+                className="btn bg-white text-black border-[#e5e5e5] mt-5"
+                type="button"
+                onClick={handleGoogleLogin}
+              >
+                Login with Google
+              </button>
+            </form>
+          ) : (
+            <div className="mt-6 p-4 bg-gray-100 rounded text-center">
+              <h1 className="text-xl font-bold mb-2">Welcome, {user.displayName}</h1>
+              <p><strong>Email:</strong> {user.email}</p>
+              {user.photoURL && <img className="mx-auto rounded-full mt-2" src={user.photoURL} alt="profile" />}
+              <button className="btn btn-error mt-3" onClick={handleLogout}>Logout</button>
+            </div>
+          )}
         </div>
-        <Link to="/" className=' btn btn-primary'><button>Home</button></Link>
+        <Link to="/" className='btn btn-primary mt-2'><button>Home</button></Link>
       </div>
-
-      {user && (
-        <div className="mt-6 p-4 bg-gray-100 rounded">
-        <h1 className="text-xl font-bold mb-2">User Information</h1>
-        <p><strong>Name:</strong> {user.displayName}</p>
-        <p><strong>Email:</strong> {user.email}</p>
-        <img src={user.photoURL} alt="" />
-      </div>
-      )}
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
