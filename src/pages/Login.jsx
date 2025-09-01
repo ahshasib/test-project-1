@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router';
 import {
   signInWithPopup,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  signOut
+  signOut,
+  sendPasswordResetEmail
 } from "firebase/auth";
 import { auth } from '../firebase/firebase.config';
 
 const Login = () => {
   const provider = new GoogleAuthProvider();
   const [user, setUser] = useState(null);
+  const emailRef = useRef();
 
   // ✅ Track user even after refresh
   useEffect(() => {
@@ -84,6 +86,21 @@ const Login = () => {
     setUser(null);
   };
 
+
+//handle forget password
+const handleForgetPass = () =>{
+const email = emailRef.current.value;
+sendPasswordResetEmail(auth, email)
+  .then(() => {
+   console.log("email is sended")
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ..
+  });
+}
+
   return (
     <div className='flex justify-center items-center w-full h-screen'>
       <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
@@ -92,9 +109,10 @@ const Login = () => {
           {!user ? (
             <form className="fieldset" onSubmit={handleSubmit}>
               <label className="label">Email</label>
-              <input type="email" className="input" placeholder="Email" name="email" required />
+              <input type="email" className="input" ref={emailRef} placeholder="Email" name="email" required />
               <label className="label">Password</label>
               <input type="password" className="input" placeholder="Password" name="password" required />
+              <div><a class="link link-hover" onClick={handleForgetPass}>Forgot password?</a></div>
               <button className="btn btn-neutral my-4">Login</button>
               <hr />
               <button

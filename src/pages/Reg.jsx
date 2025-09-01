@@ -65,7 +65,7 @@ sendEmailVerification(auth.currentUser)
             <input type="email" class="input" placeholder="Email" name='email'/>
             <label class="label">Password</label>
             <input type="password" class="input" placeholder="Password" name='password'/>
-            <div><a class="link link-hover">Forgot password?</a></div>
+           
             <button class="btn btn-neutral mt-4" type='submit'>Login</button>
           </form>
         </div>
