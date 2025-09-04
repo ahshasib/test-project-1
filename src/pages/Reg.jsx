@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, {  useContext, useState } from 'react'
 import { Link } from 'react-router'
 import { auth } from '../firebase/firebase.config';
-import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
+import {  sendEmailVerification, updateProfile } from 'firebase/auth';
+import { Authcontext } from './../context/Authcontext';
 
 const Reg = () => {
+  const {createUser} = useContext(Authcontext)
 
   const [user,setuser] = useState(null)
 
@@ -15,13 +17,14 @@ const Reg = () => {
     const password = form.password.value;
   
 
-  createUserWithEmailAndPassword(auth, email, password)
+    createUser(email, password)
+    
   .then((userCredential) => {
 
 //email verification
 sendEmailVerification(auth.currentUser)
 .then(() => {
-  console.log("Verification email sent to:", user.email);
+  console.log("Verification email sent to:", auth.currentUser.email);
 })
 
 
