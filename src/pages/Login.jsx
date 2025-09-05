@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { Link } from 'react-router';
 import {
   signInWithPopup,
@@ -9,11 +9,13 @@ import {
   sendPasswordResetEmail
 } from "firebase/auth";
 import { auth } from '../firebase/firebase.config';
+import { Authcontext } from '../context/Authcontext';
 
 const Login = () => {
   const provider = new GoogleAuthProvider();
   const [user, setUser] = useState(null);
   const emailRef = useRef();
+  const {loginUser} = use(Authcontext)
 
   // ✅ Track user even after refresh
   useEffect(() => {
@@ -58,7 +60,7 @@ const Login = () => {
     const password = form.password.value;
 
     try {
-       signInWithEmailAndPassword(auth, email, password)
+      loginUser(email, password)
       .then((userCredential) => {
         const user = userCredential.user;
         if (!user.emailVerified) {
