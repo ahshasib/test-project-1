@@ -43,6 +43,7 @@ const Home = () => {
       {/* Your content */}
       <div className="relative z-10  text-white">
         <h1 className="text-5xl font-bold text-center py-5">Dark Gradient Background ✨</h1>
+        <h1 className="text-5xl font-bold text-center py-5">Theme ✨</h1>
         <div className='flex justify-center items-center w-full h-screen gap-5 '>
             <Link to="/login" className=' btn btn-primary'><button>Login</button></Link>
             <Link to="/registration" className=' btn btn-primary'><button>registration</button></Link>
