@@ -1,4 +1,4 @@
-import React, {  useContext, useState } from 'react'
+import React, {  use, useContext, useState } from 'react'
 import { Link } from 'react-router'
 import { auth } from '../firebase/firebase.config';
 import {  sendEmailVerification, updateProfile } from 'firebase/auth';
@@ -7,7 +7,7 @@ import { Authcontext } from './../context/Authcontext';
 const Reg = () => {
   const {createUser} = useContext(Authcontext)
 
-  const [user,setuser] = useState(null)
+  const {user} = use(Authcontext)
 
   const handleSubmit = (e) =>{
     e.preventDefault();

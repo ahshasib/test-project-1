@@ -4,7 +4,6 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
-  onAuthStateChanged,
   signOut,
   sendPasswordResetEmail
 } from "firebase/auth";
@@ -13,28 +12,12 @@ import { Authcontext } from '../context/Authcontext';
 
 const Login = () => {
   const provider = new GoogleAuthProvider();
-  const [user, setUser] = useState(null);
+  const {user} = use(Authcontext)
   const emailRef = useRef();
   const {loginUser} = use(Authcontext)
 
   // ✅ Track user even after refresh
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser({
-          displayName: currentUser.displayName || currentUser.email.split('@')[0],
-          email: currentUser.email,
-          uid: currentUser.uid,
-          photoURL: currentUser.photoURL || null,
-        });
-      } else {
-        setUser(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
+  
   // Google login
   const handleGoogleLogin = async (e) => {
     e.preventDefault();
