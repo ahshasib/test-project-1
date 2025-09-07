@@ -47,6 +47,7 @@ const Home = () => {
         <div className='flex justify-center items-center w-full h-screen gap-5 '>
             <Link to="/login" className=' btn btn-primary'><button>Login</button></Link>
             <Link to="/registration" className=' btn btn-primary'><button>registration</button></Link>
+            <Link to="/order" className=' btn btn-primary'><button>Order</button></Link>
         </div>
       </div>
     </div>

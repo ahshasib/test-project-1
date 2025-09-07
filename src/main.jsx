@@ -7,6 +7,9 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Reg from './pages/Reg';
 import AuthProvider from './context/AuthProvider';
+import PrivetRoute from './Route/PrivetRoute';
+import Order from './pages/Order';
+
 
 const router = createBrowserRouter([
   {
@@ -21,6 +24,11 @@ const router = createBrowserRouter([
     path: "/registration",
     element: <Reg></Reg>
   },
+  {
+    path: "/order",
+    element: <PrivetRoute><Order></Order></PrivetRoute>
+  },
+  
 
 ]);
 

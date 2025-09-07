@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndP
 
 const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState()
 
 const createUser = (email,password) =>{
    return createUserWithEmailAndPassword(auth, email, password)
