@@ -5,7 +5,7 @@ import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndP
 
 const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState()
+  const [loading, setLoading] = useState(true);
 
 const createUser = (email,password) =>{
    return createUserWithEmailAndPassword(auth, email, password)
@@ -24,6 +24,7 @@ useEffect(() => {
         uid: currentUser.uid,
         photoURL: currentUser.photoURL || null,
       });
+      setLoading(false)
     } else {
       setUser(null);
     }
@@ -34,6 +35,7 @@ useEffect(() => {
 
 
 const userInfo = {
+  loading,
     user,
     createUser,
     loginUser

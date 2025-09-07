@@ -2,7 +2,7 @@ import React from 'react'
 
 const Order = () => {
   return (
-    <div>Order</div>
+    <div className='bg-gray-800 h-screen text-white'>Order</div>
   )
 }
 
