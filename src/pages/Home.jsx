@@ -1,6 +1,8 @@
 import React from "react";
 import { Link } from "react-router"; 
 import { motion } from "framer-motion";
+import { div } from "framer-motion/client";
+import Navbar from "../component/Navbar";
 
 const Home = () => {
   // Random scattered stars
@@ -13,13 +15,15 @@ const Home = () => {
   }));
 
   return (
-    <div
-      className="relative w-full h-screen flex items-center justify-center overflow-hidden"
-      style={{
-        backgroundImage: `url(./bg.png)`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+    <div className="relative w-full h-screen overflow-hidden" style={{
+      backgroundImage: `url(./bg.png)`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    }}>
+      <Navbar></Navbar>
+      <div
+      className="w-full h-screen flex items-center justify-center "
+      
     >
       {/* Scattered Twinkling Stars */}
       {stars.map((star, idx) => (
@@ -95,6 +99,7 @@ const Home = () => {
           </a>
         </div>
       </div>
+    </div>
     </div>
   );
 };
