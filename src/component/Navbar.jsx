@@ -46,6 +46,7 @@ const Navbar = () => {
       <li><a>Item 3</a></li>
       <li><a>Submenu 2</a></li>
       <li><a>Submenu 2</a></li>
+      <li><a>Submenu 2</a></li>
     </ul>
   </div>
   <div class="navbar-end">
